@@ -31,8 +31,58 @@
 
   <title>flutter_sliding_puzzle</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    /* Modern Flutter loading overlay */
+    #flutter-loader {
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+      transition: opacity 0.3s;
+    }
+    .loader {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 8px solid #6366f1;
+      border-top: 8px solid #fff;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 4px 24px rgba(99,102,241,0.15);
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loader-text {
+      margin-top: 24px;
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 1.2rem;
+      color: #6366f1;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
+  <div id="flutter-loader">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div class="loader"></div>
+      <div class="loader-text">Loading Sliding Puzzle...</div>
+    </div>
+  </div>
+  <script>
+    // Hide loader when Flutter is ready
+    window.addEventListener('flutter-first-frame', function() {
+      var loader = document.getElementById('flutter-loader');
+      if (loader) loader.style.opacity = '0';
+      setTimeout(function() {
+        if (loader) loader.style.display = 'none';
+      }, 350);
+    });
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
