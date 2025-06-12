@@ -1,0 +1,46 @@
+[
+  {
+    "levelname": "level1",
+    "board_size": 5
+  },
+  {
+    "levelname": "level10",
+    "board_size": 5
+  },
+  {
+    "levelname": "level10",
+    "board_size": 5
+  },
+  {
+    "levelname": "level2",
+    "board_size": 5
+  },
+  {
+    "levelname": "level3",
+    "board_size": 5
+  },
+  {
+    "levelname": "level4",
+    "board_size": 5
+  },
+  {
+    "levelname": "level5",
+    "board_size": 5
+  },
+  {
+    "levelname": "level6",
+    "board_size": 5
+  },
+  {
+    "levelname": "level7",
+    "board_size": 5
+  },
+  {
+    "levelname": "level8",
+    "board_size": 5
+  },
+  {
+    "levelname": "level9",
+    "board_size": 5
+  }
+]
