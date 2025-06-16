@@ -4,14 +4,6 @@
     "board_size": 5
   },
   {
-    "levelname": "level10",
-    "board_size": 5
-  },
-  {
-    "levelname": "level10",
-    "board_size": 5
-  },
-  {
     "levelname": "level2",
     "board_size": 5
   },
@@ -42,5 +34,241 @@
   {
     "levelname": "level9",
     "board_size": 5
+  },
+  {
+    "levelname": "level10",
+    "board_size": 5
+  },
+  {
+    "levelname": "level11",
+    "board_size": 5
+  },
+  {
+    "levelname": "level12",
+    "board_size": 5
+  },
+  {
+    "levelname": "level13",
+    "board_size": 5
+  },
+  {
+    "levelname": "level14",
+    "board_size": 5
+  },
+  {
+    "levelname": "level15",
+    "board_size": 5
+  },
+  {
+    "levelname": "level16",
+    "board_size": 5
+  },
+  {
+    "levelname": "level17",
+    "board_size": 5
+  },
+  {
+    "levelname": "level18",
+    "board_size": 5
+  },
+  {
+    "levelname": "level19",
+    "board_size": 5
+  },
+  {
+    "levelname": "level20",
+    "board_size": 5
+  },
+  {
+    "levelname": "level21",
+    "board_size": 6
+  },
+  {
+    "levelname": "level22",
+    "board_size": 6
+  },
+  {
+    "levelname": "level23",
+    "board_size": 6
+  },
+  {
+    "levelname": "level24",
+    "board_size": 6
+  },
+  {
+    "levelname": "level25",
+    "board_size": 6
+  },
+  {
+    "levelname": "level26",
+    "board_size": 6
+  },
+  {
+    "levelname": "level27",
+    "board_size": 6
+  },
+  {
+    "levelname": "level28",
+    "board_size": 6
+  },
+  {
+    "levelname": "level28",
+    "board_size": 6
+  },
+  {
+    "levelname": "level29",
+    "board_size": 6
+  },
+  {
+    "levelname": "level30",
+    "board_size": 6
+  },
+  {
+    "levelname": "level31",
+    "board_size": 6
+  },
+  {
+    "levelname": "level32",
+    "board_size": 6
+  },
+  {
+    "levelname": "level32",
+    "board_size": 6
+  },
+  {
+    "levelname": "level33",
+    "board_size": 6
+  },
+  {
+    "levelname": "level34",
+    "board_size": 6
+  },
+  {
+    "levelname": "level35",
+    "board_size": 6
+  },
+  {
+    "levelname": "level36",
+    "board_size": 6
+  },
+  {
+    "levelname": "level37",
+    "board_size": 6
+  },
+  {
+    "levelname": "level38",
+    "board_size": 6
+  },
+  {
+    "levelname": "level39",
+    "board_size": 6
+  },
+  {
+    "levelname": "level39",
+    "board_size": 6
+  },
+  {
+    "levelname": "level40",
+    "board_size": 6
+  },
+  {
+    "levelname": "level41",
+    "board_size": 6
+  },
+  {
+    "levelname": "level42",
+    "board_size": 6
+  },
+  {
+    "levelname": "level42",
+    "board_size": 6
+  },
+  {
+    "levelname": "level43",
+    "board_size": 6
+  },
+  {
+    "levelname": "level44",
+    "board_size": 6
+  },
+  {
+    "levelname": "level44",
+    "board_size": 6
+  },
+  {
+    "levelname": "level45",
+    "board_size": 6
+  },
+  {
+    "levelname": "level46",
+    "board_size": 6
+  },
+  {
+    "levelname": "level47",
+    "board_size": 6
+  },
+  {
+    "levelname": "level48",
+    "board_size": 6
+  },
+  {
+    "levelname": "level49",
+    "board_size": 6
+  },
+  {
+    "levelname": "level49",
+    "board_size": 6
+  },
+  {
+    "levelname": "level50",
+    "board_size": 6
+  },
+  {
+    "levelname": "level50",
+    "board_size": 7
+  },
+  {
+    "levelname": "level51",
+    "board_size": 7
+  },
+  {
+    "levelname": "level51",
+    "board_size": 7
+  },
+  {
+    "levelname": "level52",
+    "board_size": 7
+  },
+  {
+    "levelname": "level53",
+    "board_size": 7
+  },
+  {
+    "levelname": "level54",
+    "board_size": 7
+  },
+  {
+    "levelname": "level55",
+    "board_size": 7
+  },
+  {
+    "levelname": "level56",
+    "board_size": 7
+  },
+  {
+    "levelname": "level57",
+    "board_size": 7
+  },
+  {
+    "levelname": "level58",
+    "board_size": 7
+  },
+  {
+    "levelname": "level59",
+    "board_size": 7
+  },
+  {
+    "levelname": "level60",
+    "board_size": 7
   }
 ]
