@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <!-- <base href="/"> -->
+  <base href="/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -23,32 +23,64 @@
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="code_canyon_peg_solitaire">
+  <meta name="apple-mobile-web-app-title" content="flutter_sliding_puzzle">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>code_canyon_peg_solitaire</title>
+  <title>flutter_sliding_puzzle</title>
   <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <div id="loading" style="position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f8fafc 0%,#e0e7ef 100%);z-index:9999;">
-    <div style="display:flex;flex-direction:column;align-items:center;">
-      <div class="loader" style="width:48px;height:48px;border:6px solid #e0e7ef;border-top:6px solid #3b82f6;border-radius:50%;animation:spin 1s linear infinite;"></div>
-      <div style="margin-top:18px;font-family:sans-serif;font-size:1.2em;color:#3b82f6;letter-spacing:0.5px;font-weight:600;">Loading Peg Solitaire...</div>
-    </div>
-  </div>
   <style>
+    /* Modern Flutter loading overlay */
+    #flutter-loader {
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+      transition: opacity 0.3s;
+    }
+    .loader {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 8px solid #6366f1;
+      border-top: 8px solid #fff;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 4px 24px rgba(99,102,241,0.15);
+    }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    .loader-text {
+      margin-top: 24px;
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 1.2rem;
+      color: #6366f1;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
   </style>
+</head>
+<body>
+  <div id="flutter-loader">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div class="loader"></div>
+      <div class="loader-text">Loading Sliding Puzzle...</div>
+    </div>
+  </div>
   <script>
-    window.addEventListener('load', function() {
-      var loading = document.getElementById('loading');
-      if (loading) loading.style.display = 'none';
+    // Hide loader when Flutter is ready
+    window.addEventListener('flutter-first-frame', function() {
+      var loader = document.getElementById('flutter-loader');
+      if (loader) loader.style.opacity = '0';
+      setTimeout(function() {
+        if (loader) loader.style.display = 'none';
+      }, 350);
     });
   </script>
   <script src="flutter_bootstrap.js" async></script>
