@@ -35,7 +35,8 @@
 
     .track {
       width: 200vw;
-      height: 100vh;
+      height: 100dvh;
+      min-height: -webkit-fill-available;
       display: flex;
       transform: translateX(0);
       transition: transform var(--track-duration) var(--track-ease);
@@ -48,7 +49,8 @@
 
     .pdf-pane {
       width: 100vw;
-      height: 100vh;
+      height: 100dvh;
+      min-height: -webkit-fill-available;
       border: 0;
       background: #fff;
       flex: 0 0 100vw;
@@ -134,6 +136,32 @@
         --switch-bottom: 14px;
         --switch-left: 14px;
       }
+
+      html,
+      body,
+      .viewport {
+        overflow-x: hidden;
+      }
+
+      /* Mobile: show one PDF at a time (more reliable than horizontal slide) */
+      .track {
+        width: 100%;
+        max-width: 100%;
+        transform: none !important;
+        overflow-x: hidden;
+      }
+
+      .pdf-pane {
+        display: none;
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
+        touch-action: pan-y;
+      }
+
+      .pdf-pane.active {
+        display: block;
+      }
     }
   </style>
 </head>
@@ -144,14 +172,14 @@
         id="frame-en"
         class="pdf-pane"
         title="English CV"
-        src="en.pdf#toolbar=1&navpanes=0&scrollbar=0&&zoom=125"
+        src="en.pdf"
       ></iframe>
 
       <iframe
         id="frame-vn"
         class="pdf-pane"
         title="Vietnamese CV"
-        src="vn.pdf#toolbar=1&navpanes=0&scrollbar=0&&zoom=125"
+        src="vn.pdf"
       ></iframe>
     </div>
   </div>
@@ -167,12 +195,47 @@
   <script>
     const toggle = document.getElementById('language-toggle');
     const track = document.getElementById('pdf-track');
+    const frameEn = document.getElementById('frame-en');
+    const frameVn = document.getElementById('frame-vn');
+    const mobileMq = window.matchMedia('(max-width: 720px)');
+
+    function setPdfSources() {
+      const hash = mobileMq.matches
+        ? '#toolbar=0&navpanes=0&scrollbar=1&view=FitH&zoom=page-width'
+        : '#toolbar=1&navpanes=0&scrollbar=1&zoom=125';
+
+      const enSrc = `en.pdf${hash}`;
+      const vnSrc = `vn.pdf${hash}`;
+
+      if (frameEn.getAttribute('src') !== enSrc) frameEn.setAttribute('src', enSrc);
+      if (frameVn.getAttribute('src') !== vnSrc) frameVn.setAttribute('src', vnSrc);
+    }
 
     function updateTrackPosition() {
-      track.classList.toggle('show-vn', toggle.checked);
+      if (mobileMq.matches) {
+        frameEn.classList.toggle('active', !toggle.checked);
+        frameVn.classList.toggle('active', toggle.checked);
+      } else {
+        frameEn.classList.remove('active');
+        frameVn.classList.remove('active');
+        track.classList.toggle('show-vn', toggle.checked);
+      }
     }
 
     toggle.addEventListener('change', updateTrackPosition);
+
+    const onViewportModeChange = () => {
+      setPdfSources();
+      updateTrackPosition();
+    };
+
+    if (mobileMq.addEventListener) {
+      mobileMq.addEventListener('change', onViewportModeChange);
+    } else {
+      mobileMq.addListener(onViewportModeChange);
+    }
+
+    setPdfSources();
     updateTrackPosition();
   </script>
 </body>
