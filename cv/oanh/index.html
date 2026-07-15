@@ -98,6 +98,30 @@
       border: 1px solid rgba(57, 81, 100, 0.25);
     }
 
+    .pdf-status--loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 56px;
+    }
+
+    .pdf-spinner {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(57, 81, 100, 0.25);
+      border-top-color: #395164;
+      animation: pdf-spin 800ms linear infinite;
+      flex: 0 0 auto;
+    }
+
+    @keyframes pdf-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     .pdf-error {
       color: #7a1a1a;
       background: #ffe7e7;
@@ -238,7 +262,7 @@
   <div class="bottom-control">
     <span class="label">Language</span>
     <label class="switch" for="language-toggle" aria-label="Switch CV language">
-      <input id="language-toggle" type="checkbox">
+      <input id="language-toggle" type="checkbox" autocomplete="off">
       <span class="slider"></span>
     </label>
   </div>
@@ -258,14 +282,28 @@
     const mobileMq = window.matchMedia('(max-width: 720px)');
 
     const pdfStates = {
-      en: { url: 'en.pdf', container: viewerEn, doc: null, renderToken: 0, lastWidth: 0 },
-      vn: { url: 'vn.pdf', container: viewerVn, doc: null, renderToken: 0, lastWidth: 0 }
+      en: { url: 'vn.pdf', container: viewerEn, doc: null, renderToken: 0, lastWidth: 0 },
+      vn: { url: 'en.pdf', container: viewerVn, doc: null, renderToken: 0, lastWidth: 0 }
     };
 
-    function statusNode(message, className) {
+    function statusNode(message, className, loading = false) {
       const div = document.createElement('div');
       div.className = className;
-      div.textContent = message;
+
+      if (loading) {
+        const spinner = document.createElement('span');
+        spinner.className = 'pdf-spinner';
+        spinner.setAttribute('aria-hidden', 'true');
+
+        const text = document.createElement('span');
+        text.textContent = message;
+
+        div.appendChild(spinner);
+        div.appendChild(text);
+      } else {
+        div.textContent = message;
+      }
+
       return div;
     }
 
@@ -279,7 +317,7 @@
     async function renderPdf(state) {
       const renderToken = ++state.renderToken;
       state.container.innerHTML = '';
-      state.container.appendChild(statusNode('Loading PDF...', 'pdf-status'));
+      state.container.appendChild(statusNode('Loading...', 'pdf-status pdf-status--loading', true));
 
       try {
         const pdfDoc = await getPdfDocument(state);
@@ -391,6 +429,8 @@
       }, 180);
     });
 
+    // Always start with EN on first pane, independent from browser form-state restore.
+    toggle.checked = false;
     updateTrackPosition();
     renderVisiblePdfs(true);
   </script>
