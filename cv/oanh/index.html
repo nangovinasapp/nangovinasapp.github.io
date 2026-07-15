@@ -52,8 +52,56 @@
       height: 100dvh;
       min-height: -webkit-fill-available;
       border: 0;
-      background: #fff;
+      background: #e8edf2;
       flex: 0 0 100vw;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: 14px 0;
+    }
+
+    .pdf-viewer {
+      width: 100%;
+      display: grid;
+      gap: 14px;
+      justify-items: center;
+      padding: 0 12px 20px;
+    }
+
+    .pdf-page {
+      width: min(100%, 980px);
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 10px 26px rgba(17, 24, 34, 0.18);
+      overflow: hidden;
+    }
+
+    .pdf-page canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+    }
+
+    .pdf-status,
+    .pdf-error {
+      width: min(100%, 980px);
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .pdf-status {
+      color: #395164;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(57, 81, 100, 0.25);
+    }
+
+    .pdf-error {
+      color: #7a1a1a;
+      background: #ffe7e7;
+      border: 1px solid #f0b5b5;
     }
 
     .bottom-control {
@@ -157,6 +205,7 @@
         max-width: 100%;
         flex: 0 0 100%;
         touch-action: pan-y;
+        padding-top: 10px;
       }
 
       .pdf-pane.active {
@@ -168,19 +217,21 @@
 <body>
   <div class="viewport">
     <div id="pdf-track" class="track">
-      <iframe
-        id="frame-en"
+      <section
+        id="pane-en"
         class="pdf-pane"
-        title="English CV"
-        src="en.pdf"
-      ></iframe>
+        aria-label="English CV"
+      >
+        <div id="viewer-en" class="pdf-viewer"></div>
+      </section>
 
-      <iframe
-        id="frame-vn"
+      <section
+        id="pane-vn"
         class="pdf-pane"
-        title="Vietnamese CV"
-        src="vn.pdf"
-      ></iframe>
+        aria-label="Vietnamese CV"
+      >
+        <div id="viewer-vn" class="pdf-viewer"></div>
+      </section>
     </div>
   </div>
 
@@ -192,41 +243,138 @@
     </label>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
+    const pdfjsLib = window['pdfjs-dist/build/pdf'];
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
     const toggle = document.getElementById('language-toggle');
     const track = document.getElementById('pdf-track');
-    const frameEn = document.getElementById('frame-en');
-    const frameVn = document.getElementById('frame-vn');
+    const paneEn = document.getElementById('pane-en');
+    const paneVn = document.getElementById('pane-vn');
+    const viewerEn = document.getElementById('viewer-en');
+    const viewerVn = document.getElementById('viewer-vn');
     const mobileMq = window.matchMedia('(max-width: 720px)');
 
-    function setPdfSources() {
-      const hash = mobileMq.matches
-        ? '#toolbar=0&navpanes=0&scrollbar=1&view=FitH&zoom=page-width'
-        : '#toolbar=1&navpanes=0&scrollbar=1&zoom=125';
+    const pdfStates = {
+      en: { url: 'en.pdf', container: viewerEn, doc: null, renderToken: 0, lastWidth: 0 },
+      vn: { url: 'vn.pdf', container: viewerVn, doc: null, renderToken: 0, lastWidth: 0 }
+    };
 
-      const enSrc = `en.pdf${hash}`;
-      const vnSrc = `vn.pdf${hash}`;
+    function statusNode(message, className) {
+      const div = document.createElement('div');
+      div.className = className;
+      div.textContent = message;
+      return div;
+    }
 
-      if (frameEn.getAttribute('src') !== enSrc) frameEn.setAttribute('src', enSrc);
-      if (frameVn.getAttribute('src') !== vnSrc) frameVn.setAttribute('src', vnSrc);
+    async function getPdfDocument(state) {
+      if (!state.doc) {
+        state.doc = await pdfjsLib.getDocument(state.url).promise;
+      }
+      return state.doc;
+    }
+
+    async function renderPdf(state) {
+      const renderToken = ++state.renderToken;
+      state.container.innerHTML = '';
+      state.container.appendChild(statusNode('Loading PDF...', 'pdf-status'));
+
+      try {
+        const pdfDoc = await getPdfDocument(state);
+        if (renderToken !== state.renderToken) return;
+
+        const containerWidth = Math.max(
+          320,
+          Math.floor(state.container.clientWidth || state.container.parentElement.clientWidth || window.innerWidth)
+        );
+        const maxPageWidth = Math.min(980, containerWidth - 24);
+
+        state.container.innerHTML = '';
+
+        for (let pageNumber = 1; pageNumber <= pdfDoc.numPages; pageNumber += 1) {
+          const page = await pdfDoc.getPage(pageNumber);
+          if (renderToken !== state.renderToken) return;
+
+          const baseViewport = page.getViewport({ scale: 1 });
+          const cssScale = maxPageWidth / baseViewport.width;
+          const viewport = page.getViewport({ scale: cssScale });
+          const pixelRatio = window.devicePixelRatio || 1;
+
+          const pageWrap = document.createElement('div');
+          pageWrap.className = 'pdf-page';
+
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d', { alpha: false });
+
+          canvas.width = Math.floor(viewport.width * pixelRatio);
+          canvas.height = Math.floor(viewport.height * pixelRatio);
+          canvas.style.width = `${Math.floor(viewport.width)}px`;
+          canvas.style.height = `${Math.floor(viewport.height)}px`;
+
+          pageWrap.appendChild(canvas);
+          state.container.appendChild(pageWrap);
+
+          const renderContext = {
+            canvasContext: ctx,
+            viewport,
+            transform: pixelRatio !== 1 ? [pixelRatio, 0, 0, pixelRatio, 0, 0] : null
+          };
+
+          await page.render(renderContext).promise;
+          if (renderToken !== state.renderToken) return;
+        }
+      } catch (error) {
+        state.container.innerHTML = '';
+        state.container.appendChild(statusNode('Unable to load PDF. Please refresh the page.', 'pdf-error'));
+        console.error(`Failed to render ${state.url}:`, error);
+      }
+    }
+
+    async function ensureRendered(langKey, force = false) {
+      const state = pdfStates[langKey];
+      const width = Math.max(
+        320,
+        Math.floor(state.container.clientWidth || state.container.parentElement.clientWidth || window.innerWidth)
+      );
+
+      if (!force && state.lastWidth && Math.abs(state.lastWidth - width) < 8) return;
+
+      state.lastWidth = width;
+      await renderPdf(state);
+    }
+
+    async function renderVisiblePdfs(force = false) {
+      if (mobileMq.matches) {
+        await ensureRendered(toggle.checked ? 'vn' : 'en', force);
+      } else {
+        await Promise.all([
+          ensureRendered('en', force),
+          ensureRendered('vn', force)
+        ]);
+      }
     }
 
     function updateTrackPosition() {
       if (mobileMq.matches) {
-        frameEn.classList.toggle('active', !toggle.checked);
-        frameVn.classList.toggle('active', toggle.checked);
+        paneEn.classList.toggle('active', !toggle.checked);
+        paneVn.classList.toggle('active', toggle.checked);
       } else {
-        frameEn.classList.remove('active');
-        frameVn.classList.remove('active');
+        paneEn.classList.remove('active');
+        paneVn.classList.remove('active');
         track.classList.toggle('show-vn', toggle.checked);
       }
     }
 
-    toggle.addEventListener('change', updateTrackPosition);
-
-    const onViewportModeChange = () => {
-      setPdfSources();
+    toggle.addEventListener('change', async () => {
       updateTrackPosition();
+      await renderVisiblePdfs();
+    });
+
+    const onViewportModeChange = async () => {
+      updateTrackPosition();
+      await renderVisiblePdfs(true);
     };
 
     if (mobileMq.addEventListener) {
@@ -235,8 +383,16 @@
       mobileMq.addListener(onViewportModeChange);
     }
 
-    setPdfSources();
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        renderVisiblePdfs(true);
+      }, 180);
+    });
+
     updateTrackPosition();
+    renderVisiblePdfs(true);
   </script>
 </body>
 </html>
